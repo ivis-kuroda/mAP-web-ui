@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # === Base image with Python and user setup ===
-FROM python:3.13-slim AS base
+FROM python:3.14-slim AS base
 ARG USERNAME=pyuser
 ARG GROUPNAME=pyuser
 ARG UID=1000
@@ -19,7 +19,7 @@ USER ${USERNAME}
 # === Install Python dependencies ===
 FROM base AS deps
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --link-mode=copy
+RUN uv sync --frozen
 
 
 # === Development server for Flask app ===
