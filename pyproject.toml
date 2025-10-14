@@ -15,9 +15,17 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "pyright>=1.1.406",
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
+    "taskipy>=1.14.1",
 ]
+
+[tool.taskipy.tasks]
+test = "pytest"
+lint = "uvx ruff check"
+format = "uvx ruff format"
+typecheck = "pyright"
 
 [tool.pytest.ini_options]
 pythonpath = ["server"]
@@ -28,3 +36,10 @@ addopts = [
 [tool.coverage.run]
 source = ["server"]
 omit = ["*/__init__.py", "*/tests/*"]
+
+[tool.ruff]
+fix = true
+
+[tool.pyright]
+extraPaths = ["server"]
+typeCheckingMode =  "standard"
