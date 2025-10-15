@@ -34,6 +34,22 @@ class RuntimeConfig(BaseSettings):
             f"{self.POSTGRES_DB}"
         )
 
+    CELERY_BROKER_URL: str = "redis://localhost:6379/0"
+    """URL for the Celery message broker."""
+
+    CELERY_RESULT_BACKEND: str = "redis://localhost:6379/0"
+    """URL for the Celery result backend."""
+
+    @computed_field
+    @property
+    def CELERY(self) -> dict[str, str | bool]:
+        """Celery configuration dictionary."""
+        return {
+            "broker_url": self.CELERY_BROKER_URL,
+            "result_backend": self.CELERY_RESULT_BACKEND,
+            "task_ignore_result": True,
+        }
+
 
 config = RuntimeConfig()
 """runtime configuration instance."""

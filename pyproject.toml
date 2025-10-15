@@ -5,16 +5,19 @@ description = "Web client for managing JAIRO Cloud groups."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "celery>=5.5.3",
     "flask>=3.1.2",
     "flask-sqlalchemy>=3.1.1",
     "psycopg[binary]>=3.2.10",
     "pydantic-settings>=2.11.0",
-    "pydantic[email]>=2.12.1",
+    "pydantic[email]>=2.12.2",
+    "redis>=6.4.0",
     "sqlalchemy-utils>=0.42.0",
 ]
 
 [dependency-groups]
 dev = [
+    "celery-types>=0.23.0",
     "pyright>=1.1.406",
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
@@ -26,6 +29,7 @@ test = "pytest"
 lint = "uvx ruff check"
 format = "uvx ruff format"
 typecheck = "pyright"
+check-updates = "uvx --from=pip-check-updates pcu pyproject.toml"
 
 [tool.pytest.ini_options]
 pythonpath = ["server"]
