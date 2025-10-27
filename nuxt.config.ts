@@ -4,6 +4,7 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/test-utils',
     '@nuxt/ui',
+    '@nuxtjs/i18n',
   ],
   ssr: false,
   devtools: { enabled: false },
@@ -22,5 +23,14 @@ export default defineNuxtConfig({
     config: {
       stylistic: true,
     },
+  },
+  i18n: {
+    locales: [
+      { code: 'en', iso: 'es-US', file: 'en.json', name: 'English' },
+      { code: 'ja', iso: 'ja-JP', file: 'ja.json', name: '日本語' },
+    ],
+    defaultLocale: 'ja',
+    detectBrowserLanguage: false,
+    restructureDir: 'app/i18n',
   },
 })

@@ -1,5 +1,5 @@
 <template>
   <UPageHero
-    :title="'Welcom to Web UI'" :description="'This is the top page.'"
+    :title="$t('welcom-to')" :description="$t('top-page-description')"
   />
 </template>
