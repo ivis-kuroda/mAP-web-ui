@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 
+const { search = true, profile = true } = defineProps<{ search?: boolean, profile?: boolean }>()
+
 const { setLocale } = useI18n()
 const { currentLocale: locale, locales } = useAvailableLocales()
 
@@ -11,7 +13,7 @@ const items = computed<DropdownMenuItem[][]>(() => {
   const localePath = useLocalePath()
   return [[
     { label: $t('profile'), icon: 'i-lucide-user', to: localePath(`/users/${user.value?.id}`) },
-    { label: $t('settings'), icon: 'i-lucide-settings', to: localePath('/settings') },
+    // { label: $t('settings'), icon: 'i-lucide-settings', to: localePath('/settings') },
     { label: $t('help'), icon: 'i-lucide-help-circle', to: localePath('/help') },
   ], [
     { label: $t('logout'), icon: 'i-lucide-log-out', to: '/logout', color: 'error' }],
@@ -29,7 +31,7 @@ const isAouthenticated = true
       </NuxtLinkLocale>
     </template>
 
-    <HeaderSearch v-if="isAouthenticated" />
+    <HeaderSearch v-if="isAouthenticated && search" />
 
     <template #right>
       <UColorModeButton />
@@ -39,9 +41,9 @@ const isAouthenticated = true
         @update:model-value="setLocale($event as AvailableLocaleCode)"
       />
 
-      <UDropdownMenu :items="items" arrow :modal="false">
+      <UDropdownMenu v-if="isAouthenticated && profile" :items="items" arrow :modal="false">
         <UButton
-          v-if="isAouthenticated" :label="user?.displayName"
+          :label="user?.displayName"
           icon="i-lucide-user-circle" color="neutral" variant="subtle"
         />
       </UDropdownMenu>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
 
-const rute = useRoute()
+const route = useRoute()
 const localePath = useLocalePath()
 
 const items = computed<NavigationMenuItem[]>(() => [
@@ -12,19 +12,19 @@ const items = computed<NavigationMenuItem[]>(() => [
     label: $t('repositories'),
     icon: 'i-lucide-folder',
     to: localePath('/repos'),
-    active: rute.path.startsWith(localePath('/repos')),
+    active: route.path.startsWith(localePath('/repos')),
   },
   {
     label: $t('groups'),
     icon: 'i-lucide-users',
     to: localePath('/groups'),
-    active: rute.path.startsWith(localePath('/groups')),
+    active: route.path.startsWith(localePath('/groups')),
   },
   {
     label: $t('users'),
     icon: 'i-lucide-user',
     to: localePath('/users'),
-    active: rute.path.startsWith(localePath('/users')),
+    active: route.path.startsWith(localePath('/users')),
   },
   {
     label: $t('Others'),
@@ -34,25 +34,25 @@ const items = computed<NavigationMenuItem[]>(() => [
     label: $t('history'),
     icon: 'i-lucide-clock',
     to: localePath('/history'),
-    active: rute.path.startsWith(localePath('/history')),
+    active: route.path.startsWith(localePath('/history')),
   },
   {
     label: $t('cache-groups-menu'),
     icon: 'i-lucide-database',
     to: localePath('/cache'),
-    active: rute.path.startsWith(localePath('/cache')),
+    active: route.path.startsWith(localePath('/cache')),
   },
 ])
 </script>
 
 <template>
-  <UPageAside
-    :class="[
-      'hidden', 'lg:block', 'lg:w-50', 'shrink-0', 'border-e', 'border-default',
-      'self-start', 'sticky', 'top-(--ui-header-height)]',
-      'max-h-[calc(100vh-var(--ui-header-height))]', 'overflow-y-auto',
-    ]"
-  >
+  <UPageAside>
+    <template #top>
+      <UBadge variant="subtle" color="error">
+        {{ $t('user.role.admin') }}
+      </UBadge>
+    </template>
+
     <UNavigationMenu :items="items" orientation="vertical" />
   </UPageAside>
 </template>

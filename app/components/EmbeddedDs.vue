@@ -1,10 +1,14 @@
 <script setup lang="ts">
+const route = useRoute()
+const next = route.query.next
+
 const wayfURL = 'https://test-ds.gakunin.nii.ac.jp/WAYF'
 const wayJsURL = 'https://test-ds.gakunin.nii.ac.jp/WAYF/embedded-wayf.js'
 
 const appEntityID = 'localhost/shibboleth-sp'
 const appHandlerURL = 'localhost/Shibboleth.sso'
-const appBaseURL = 'localhost/'
+const appCallbackURL = 'localhost/auth/callback'
+const returnURL = next ? `${appCallbackURL}?next=${encodeURIComponent(String(next))}` : appCallbackURL
 
 /*  eslint-disable @stylistic/max-len, no-useless-escape */
 const embeddedWAYF = `
@@ -36,7 +40,7 @@ var wayf_sp_handlerURL = "${appHandlerURL}";
 // URL on this resource that the user shall be returned to after authentication
 // Examples: "https://econf.switch.ch/aai/home", "https://olat.uzh.ch/my/courses"
 // [Mandatory]
-var wayf_return_url = "${appBaseURL}";
+var wayf_return_url = "${returnURL}";
 
 
 //////////////////// RECOMMENDED SETTINGS ////////////////////
@@ -292,6 +296,7 @@ onMounted(() => {
     const iframeElement = document.createElement('iframe')
     iframeElement.srcdoc = embeddedWAYF
     iframeElement.width = '100%'
+    iframeElement.style.maxWidth = '800px'
     iframeElement.height = '500px'
 
     wayfContainer.parentNode.replaceChild(iframeElement, wayfContainer)

@@ -19,21 +19,21 @@ const { data: result, status, execute } = await useFetch('/api/search', {
         label: x.displayName,
         suffix: x.url,
         icon: 'i-lucide-folder',
-        to: localePath(`/repo/${x.id}`),
+        to: localePath(`/repos/${x.id}`),
       })) || [],
       users: data.users?.map(x => ({
         id: x.id,
         label: x.displayName,
         suffix: x.email,
         icon: 'i-lucide-user',
-        to: localePath(`/user/${x.id}`),
+        to: localePath(`/users/${x.id}`),
       })) || [],
       groups: data.groups?.map(x => ({
         id: x.id,
         label: x.displayName,
         suffix: `${x.members?.length || 0} members`,
         icon: 'i-lucide-users',
-        to: localePath(`/group/${x.id}`),
+        to: localePath(`/groups/${x.id}`),
       })) || [],
     }
     return items
@@ -87,7 +87,7 @@ defineShortcuts({
   <UInput
     ref="input" color="neutral"
     icon="i-lucide-search" variant="outline"
-    :placeholder="$t('search-placeholder')" class="w-50" @click="isOpen = true"
+    :placeholder="$t('search-placeholder')" class="w-50" readonly @click="isOpen = true"
   >
     <template #trailing>
       <UKbd value="/" class="pointer-events-none" />

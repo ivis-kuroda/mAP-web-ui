@@ -36,6 +36,7 @@
   },
   "help": "ヘルプ",
   "history": "履歴",
+  "login-title": "ログイン",
   "logout": "ログアウト",
   "mAP-web-ui": "mAP web UI",
   "modal": {

@@ -35,6 +35,8 @@ services:
         - action: rebuild
           path: pyproject.toml
         - action: rebuild
+          path: uv.lock
+        - action: rebuild
           path: Dockerfile
     networks:
       - dev_net
@@ -75,6 +77,8 @@ services:
         - action: rebuild
           path: pyproject.toml
         - action: rebuild
+          path: uv.lock
+        - action: rebuild
           path: Dockerfile.vite
     networks:
       - dev_net
@@ -96,6 +100,8 @@ services:
           include:
             - app
             - public
+            - content
+            - content.config.ts
             - nuxt.config.ts
           ignore:
             - .nuxt
@@ -105,6 +111,8 @@ services:
             - node_modules
         - action: rebuild
           path: package.json
+        - action: rebuild
+          path: pnpm-lock.yaml
         - action: rebuild
           path: Dockerfile
     networks:

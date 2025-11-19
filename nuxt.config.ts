@@ -4,6 +4,7 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/test-utils',
     '@nuxt/ui',
+    '@nuxt/content',
     '@nuxtjs/i18n',
   ],
   ssr: false,

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { FooterColumn } from '@nuxt/ui'
 
+const { links = true } = defineProps<{ links?: boolean }>()
+
 const localePath = useLocalePath()
 
 const columns = computed<FooterColumn[]>(() => [
@@ -26,9 +28,17 @@ const columns = computed<FooterColumn[]>(() => [
   <USeparator icon="i-simple-icons-nuxtdotjs" class="h-px" />
 
   <UFooter :ui="{ top: 'border-b border-default' }">
-    <template #top>
+    <template v-if="links" #top>
       <UContainer>
-        <UFooterColumns :columns="columns" />
+        <UPage>
+          <template #left>
+            <UPageAside />
+          </template>
+
+          <UPageBody class="pb-0 px-10">
+            <UFooterColumns :columns="columns" :ui="{ root: 'xl:grid-cols-2' }" />
+          </UPageBody>
+        </UPage>
       </UContainer>
     </template>
 
@@ -39,7 +49,13 @@ const columns = computed<FooterColumn[]>(() => [
     </template>
 
     <template #right>
-      <UColorModeButton />
+      <ULink to="" class="text-sm hover:underline inline-flex items-center gap-0.5">
+        {{ $t('privacy-policy') }}
+        <UIcon name="i-lucide-external-link" class="size-3.5 shrink-0" /></ULink>
+      |
+      <ULink to="" class="text-sm hover:underline inline-flex items-center gap-0.5">
+        {{ $t('terms-of-use') }}
+        <UIcon name="i-lucide-external-link" class="size-3.5 shrink-0" /></ULink>
     </template>
   </UFooter>
 </template>

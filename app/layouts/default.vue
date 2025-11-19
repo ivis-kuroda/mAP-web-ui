@@ -4,16 +4,18 @@
 
     <UMain>
       <UContainer>
-        <div class="flex gap-8 min-h-[calc(100vh-var(--ui-header-height))]">
-          <AppSideMenu />
+        <UPage>
+          <template #left>
+            <AppSideMenu />
+          </template>
 
-          <UPageBody class="flex-1 flex flex-col min-w-0 pb-0">
+          <UPageBody>
             <slot />
-
-            <AppFooter />
           </UPageBody>
-        </div>
+        </UPage>
       </UContainer>
     </UMain>
+
+    <AppFooter />
   </UApp>
 </template>

@@ -57,6 +57,7 @@ COPY ./ssl/server.key /etc/nginx/server.key
 
 COPY ./ssl/server.crt /etc/shibboleth/server.crt
 COPY ./ssl/server.key /etc/shibboleth/server.key
+RUN chmod 644 /etc/shibboleth/server.crt /etc/shibboleth/server.key
 
 RUN sed -i '1s|^|load_module modules/ngx_http_shibboleth_module.so;\n|' /etc/nginx/nginx.conf
 
