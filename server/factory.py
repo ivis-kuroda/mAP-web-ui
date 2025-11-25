@@ -4,7 +4,7 @@ from flask import Flask
 from ext import MapWebUI
 
 
-def create_app(config_object="config.config"):
+def create_app(config_object: object | str = "config.config"):
     app = Flask(__name__)
     app.config.from_object(config_object)
 
@@ -19,8 +19,8 @@ def create_app(config_object="config.config"):
 
 
 def celery_init_app(app: Flask) -> Celery:
-    class FlaskTask(Task):
-        def __call__(self, *args: object, **kwargs: object) -> object:
+    class FlaskTask[**P, R](Task):
+        def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
             with app.app_context():
                 return self.run(*args, **kwargs)
 

@@ -45,6 +45,7 @@ def test_validate():
     assert user.external_id == json_data["externalId"]
     assert user.user_name == json_data["userName"]
     assert user.preferred_language == json_data["preferredLanguage"]
+    assert user.meta
     assert user.meta.resource_type == "User"
     assert user.meta.created == datetime.fromisoformat(json_data["meta"]["created"])
     assert user.meta.last_modified == datetime.fromisoformat(json_data["meta"]["lastModified"])
@@ -73,6 +74,7 @@ def test_validate_json_data():
     assert user.external_id == json_data["externalId"]
     assert user.user_name == json_data["userName"]
     assert user.preferred_language == json_data["preferredLanguage"]
+    assert user.meta
     assert user.meta.resource_type == "User"
     assert user.meta.created == datetime.fromisoformat(json_data["meta"]["created"])
     assert user.meta.last_modified == datetime.fromisoformat(json_data["meta"]["lastModified"])
@@ -107,6 +109,7 @@ def test_validate_assign_invalid_type():
     user = MapUser.model_validate(json_data)
 
     with pytest.raises(ValidationError) as exc_info:
+        assert user.meta
         user.meta.resource_type = "InvalidType"  # pyright: ignore[reportAttributeAccessIssue]
 
     assert "Input should be 'User'" in str(exc_info.value)

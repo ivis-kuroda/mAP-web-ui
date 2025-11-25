@@ -1,3 +1,5 @@
+import traceback
+
 from flask import Blueprint, jsonify, request
 
 from client.users import exixt_eppn
@@ -11,12 +13,12 @@ def exist():
     """Endpoint to check if a given ePPN exists in mAP Core."""
     eppn = request.args.get("eppn")
     if not eppn:
-        return jsonify({"error": "Missing eppn parameter."}), 400
+        return jsonify(error="Missing eppn parameter."), 400
 
     token = get_access_token()
     cert = get_client_cert()
     if not token or not cert:
-        return jsonify({"error": "Service not authenticated."}), 401
+        return jsonify(error="Service not authenticated."), 401
 
     try:
         exists = exixt_eppn(
@@ -25,6 +27,12 @@ def exist():
             client_secret=cert.client_secret,
         )
     except Exception as e:
-        return {"error": str(e)}, 500
+        traceback.print_exc()
+        return jsonify(error=str(e)), 500
 
-    return jsonify({"exists": exists}), 200
+    if exists[0] is False:
+        return jsonify(exists=False), 200
+    return jsonify(
+        exists=exists[0],
+        user=exists[1].model_dump(mode="json"),
+    ), 200
