@@ -79,5 +79,9 @@
       ],
       "ignoreExtensions": ["*"]
     }
-  }
+  },
+  "mounts": [
+    "type=volume,target=${containerWorkspaceFolder}/.nuxt",
+    "type=volume,target=${containerWorkspaceFolder}/node_modules"
+  ]
 }
