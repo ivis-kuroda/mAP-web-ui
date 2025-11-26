@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { upperFirst } from 'scule'
 
-import type { TableColumn } from '@nuxt/ui'
+import type { DropdownMenuItem, TableColumn } from '@nuxt/ui'
 
 import { UButton, UIcon, ULink } from '#components'
 
@@ -31,7 +31,6 @@ const columns = computed<RepositoryTableColumn[]>(() => [
         class: 'font-bold hover:underline inline-flex items-center',
       }, [
         h('span', name),
-        h(UIcon, { name: 'i-lucide-chevron-right', class: 'size-5 shrink-0' }),
       ])
     },
     enableHiding: false,
@@ -47,7 +46,7 @@ const columns = computed<RepositoryTableColumn[]>(() => [
         class: 'hover:underline inline-flex items-center gap-1',
       }, [
         h('span', url),
-        h(UIcon, { name: 'i-lucide-external-link', class: 'size-4 shrink-0' }),
+        h(UIcon, { name: 'i-lucide-external-link', class: 'size-3 shrink-0' }),
       ])
     },
     meta: {},
@@ -55,6 +54,10 @@ const columns = computed<RepositoryTableColumn[]>(() => [
   {
     accessorKey: 'entityIds',
     header: ({ column }) => sortableHeader(column, columnNameMap.entityIds),
+  },
+  {
+    id: 'action',
+    meta: { class: { td: 'w-12' } },
   },
 ])
 
@@ -127,6 +130,29 @@ const displayInfo = computed(() => {
 })
 
 const isCreatable = true
+
+function getDropdownActions(repo: Repository): DropdownMenuItem[] {
+  return [
+    {
+      label: 'Copy URL',
+      icon: 'i-lucide-clipboard-copy',
+    },
+    {
+      label: 'Edit',
+      icon: 'i-lucide-edit-2',
+      to: `/repos/${repo.id}?mode=edit`,
+    },
+    {
+      label: 'Open in Cloud Gateway',
+      icon: 'i-lucide-external-link',
+    },
+  ]
+}
+
+const router = useRouter()
+function navigateToRepo(id: string) {
+  router.push(`/repos/${id}`)
+}
 </script>
 
 <template>
@@ -142,7 +168,7 @@ const isCreatable = true
           :label="$t('repository.new-button')"
           color="primary"
           variant="solid"
-          :to="'/service/new'"
+          :to="'/repos/new'"
           icon="i-lucide-plus"
           class="mb-4"
         />
@@ -160,7 +186,7 @@ const isCreatable = true
       <div class="flex justify-between mb-4">
         <UInput
           v-model="globalFilter"
-          class="max-w-sm"
+          class="w-1/3"
           :placeholder="$t('search-placeholder')"
           icon="i-lucide-search"
         />
@@ -207,36 +233,79 @@ const isCreatable = true
 
       <div v-if="isTableView">
         <UTable
+          v-if="pagedData.length > 0"
           ref="table"
           v-model:column-visibility="columnVisibility"
           v-model:sorting="sorting"
           v-model:global-filter="globalFilter"
           :data="pagedData"
           :columns="columns"
+        >
+          <template #action-cell="{ row }">
+            <UDropdownMenu :items="getDropdownActions(row.original)">
+              <UButton
+                icon="i-lucide-ellipsis-vertical"
+                color="neutral"
+                variant="ghost"
+                size="sm"
+                aria-label="Actions"
+              />
+            </UDropdownMenu>
+          </template>
+        </UTable>
+        <UEmpty
+          v-else
+          icon="i-lucide-search-x"
+          title="検索結果が見つかりませんでした"
+          description="検索条件を変更して、再度お試しください。"
+          variant="naked"
+          size="lg"
         />
       </div>
 
-      <div v-else class="grid grid-cols-3 gap-4">
-        <UCard v-for="item in filteredData" :key="item.entityIds" class="p-4">
-          <h3 class="font-bold text-lg mb-2">
-            <ULink
-              :to="`repos/${item.id}`"
-              class="font-bold hover:underline inline-flex items-center"
-            >
-              {{ item.displayName }}
-              <span><UIcon name="i-lucide-chevron-right" class="size-5 shrink-0" /></span>
-            </ULink>
-          </h3>
-          <p class="text-sm text-gray-600 mb-1">
-            {{ $t('repository.url-label') }}
-            <a :href="item.url" target="_blank" class="text-blue-600 hover:underline">
-              {{ item.url }}
-            </a>
-          </p>
-          <p class="text-sm text-gray-600 mb-1">
-            {{ $t('sp-connector-label') }} {{ item.entityIds }}
-          </p>
-        </UCard>
+      <div v-else>
+        <div v-if="filteredData.length > 0" class="grid grid-cols-3 gap-4">
+          <UPageCard
+            v-for="item in filteredData" :key="item.entityIds"
+            class="p-4 cursor-pointer" :ui="{ title: 'hover:underline' }"
+            @click="navigateToRepo(item.id)"
+          >
+            <template #title>
+              <NuxtLink
+                :to="`/repos/${item.id}`"
+                class="font-bold hover:underline"
+                @click.stop
+              >
+                {{ item.displayName }}
+              </NuxtLink>
+            </template>
+            <template #description>
+              <p class="text-sm mb-1">
+                {{ $t('repository.url-label') }}
+                <ULink
+                  :to="item.url" target="_blank" class="hover:underline" external
+                  @click.stop
+                >
+                  {{ item.url }}
+                  <UIcon name="i-lucide-external-link" size="3" class="size-3 shrink-0" />
+                </ULink>
+              </p>
+              <p class="text-sm mb-1">
+                {{ $t('sp-connector-label') }} {{ item.entityIds }}
+              </p>
+            </template>
+          </UPageCard>
+        </div>
+        <div v-else>
+          <UEmpty
+            v-if="filteredData.length === 0"
+            icon="i-lucide-search-x"
+            title="検索結果が見つかりませんでした"
+            description="検索条件を変更して、再度お試しください。"
+            variant="naked"
+            size="lg"
+          />
+        </div>
       </div>
 
       <div class="flex items-center mt-4">

@@ -3,11 +3,13 @@ import { upperFirst } from 'scule'
 
 import type { DropdownMenuItem, TableColumn, TableRow } from '@nuxt/ui'
 
-import { UBadge, UButton, UCheckbox, UIcon, ULink } from '#components'
+import { UButton, UCheckbox, UDropdownMenu, ULink } from '#components'
 
 const { repositories, groups } = useDataStore()
 const localePath = useLocalePath()
 const data = ref<Group[]>(groups)
+const toast = useToast()
+const { copy } = useClipboard()
 
 const columnNameMap = {
   displayName: $t('group.name-column'),
@@ -52,32 +54,20 @@ const columns = computed<GroupTableColumn[]>(() => [
         },
         [
           h('span', name),
-          h(UIcon, { name: 'i-lucide-chevron-right', class: 'size-5 shrink-0' }),
         ])
     },
     enableHiding: false,
   },
   {
-    accessorKey: 'isPublic',
+    accessorKey: 'publicStatus',
     header: ({ column }) => sortableHeader(column, columnNameMap.publicStatus),
     cell: ({ row }) => {
       return row.original.isPublic
-        ? h(UBadge, { color: 'success', variant: 'solid', size: 'sm' }, $t('group.public-badge'))
-        : h(UBadge, { color: 'error', variant: 'solid', size: 'sm' }, $t('group.private-badge'))
+        ? $t('group.public-badge')
+        : $t('group.private-badge')
     },
-  },
-  {
-    accessorKey: 'joinCondition',
-    header: ({ column }) => sortableHeader(column, columnNameMap.joinCondition),
-    cell: ({ row }) => {
-      const condition = row.original.joinCondition
-      const labelMap = {
-        'open': $t('group.open-to-join'),
-        'approval': $t('group.approval-required'),
-        'invite-only': $t('group.invite-only'),
-      } as const
-
-      return labelMap[condition]
+    sortingFn: (rowA, rowB) => {
+      return Number(rowA.original.isPublic) - Number(rowB.original.isPublic)
     },
   },
   {
@@ -93,8 +83,97 @@ const columns = computed<GroupTableColumn[]>(() => [
 
       return labelMap[visibility]
     },
+    sortingFn: (rowA, rowB) => {
+      const orderMap = {
+        public: 2,
+        private: 0,
+        hidden: 1,
+      } as const
+
+      const a = orderMap[rowA.original.memberVisibility]
+      const b = orderMap[rowB.original.memberVisibility]
+      return a - b
+    },
+  },
+  {
+    accessorKey: 'members',
+    header: ({ column }) => sortableHeader(column, $t('group.member-count')),
+    cell: ({ row }) => {
+      const count = row.original.members?.length || 0
+      return h('span', $t('group.members-count', { count }))
+    },
+  },
+  {
+    id: 'actions',
+    enableHiding: false,
+    cell: ({ row }) => {
+      return h(
+        h(
+          // @ts-expect-error: props type mismatch
+          UDropdownMenu,
+          {
+            'content': {
+              align: 'end',
+            },
+            'items': getRowItems(row),
+            'aria-label': 'Actions dropdown',
+          },
+          () =>
+            h(UButton, {
+              'icon': 'i-lucide-ellipsis-vertical',
+              'color': 'neutral',
+              'variant': 'ghost',
+              'size': 'sm',
+              'class': 'ml-auto',
+              'aria-label': 'Actions dropdown',
+            }),
+        ),
+      )
+    },
   },
 ])
+
+function getRowItems(row: TableRow<Group>): DropdownMenuItem[] {
+  return [
+    {
+      type: 'label',
+      label: $t('table.actions-label'),
+    },
+    {
+      label: $t('group.copy-group-id'),
+      icon: 'i-lucide-clipboard-copy',
+      onSelect() {
+        copy(row.original.id)
+
+        toast.add({
+          title: $t('group.copy-group-id-clipboard'),
+          color: 'success',
+          icon: 'i-lucide-circle-check',
+        })
+      },
+    },
+    {
+      label: $t('group.edit'),
+      icon: 'i-lucide-square-pen',
+    },
+    {
+      label: $t('group.show-details'),
+      icon: 'i-lucide-eye',
+    },
+    {
+      label: $t('group.view-in-cloud-gateway'),
+      icon: 'i-lucide-external-link',
+    },
+    {
+      type: 'separator',
+    },
+    {
+      label: $t('group.delete'),
+      icon: 'i-lucide-trash',
+      color: 'error',
+    },
+  ]
+}
 
 const table = useTemplateRef('table')
 
@@ -108,8 +187,8 @@ type Column = Parameters<
 function sortableHeader(column: Column, label: string) {
   const sortDirection = column.getIsSorted()
   const iconSet = {
-    asc: 'i-lucide-arrow-up-narrow-wide',
-    desc: 'i-lucide-arrow-down-wide-narrow',
+    asc: 'i-lucide-arrow-down-a-z',
+    desc: 'i-lucide-arrow-up-a-z',
     none: 'i-lucide-arrow-up-down',
   } as const
 
@@ -131,19 +210,55 @@ function sortableHeader(column: Column, label: string) {
 const sorting = ref([{ id: 'id', desc: false }])
 
 const page = ref(1)
-const pageSize = ref(5)
-const pageOptions = ref([5, 10, 20])
+const pageSize = ref(20)
+const pageOptions = ref([20, 50, 100])
 
 const globalFilter = ref('')
 const filteredData = computed(() => {
-  if (!globalFilter.value) return data.value
-  const f = globalFilter.value.toLowerCase()
-  return data.value.filter(item => item.displayName.toLowerCase().includes(f))
+  let result = data.value
+
+  // グローバルフィルター
+  if (globalFilter.value) {
+    const f = globalFilter.value.toLowerCase()
+    result = result.filter(item => item.displayName.toLowerCase().includes(f))
+  }
+
+  // リポジトリフィルター
+  if (filterStatus.repositoryFilter && selectedRepositories.value.length > 0) {
+    result = result.filter((item) => {
+      return selectedRepositories.value.includes(item.displayName)
+    })
+  }
+
+  // 公開状態フィルター
+  if (filterStatus.publicStatusFilter && selectedPublicStatus.value.length > 0) {
+    result = result.filter((item) => {
+      const statusLabel = item.isPublic ? $t('group.public-badge') : $t('group.private-badge')
+      return selectedPublicStatus.value.includes(statusLabel)
+    })
+  }
+
+  // メンバー公開フィルター
+  if (filterStatus.memberVisibilityFilter && selectedMemberVisibilities.value.length > 0) {
+    result = result.filter((item) => {
+      const labelMap = {
+        public: $t('group.members-public'),
+        private: $t('group.members-private'),
+        hidden: $t('group.members-hidden'),
+      } as const
+      const visibilityLabel = labelMap[item.memberVisibility]
+      return selectedMemberVisibilities.value.includes(visibilityLabel)
+    })
+  }
+
+  return result
 })
+
 const pagedData = computed(() => {
   const start = (page.value - 1) * pageSize.value
   return filteredData.value.slice(start, start + pageSize.value)
 })
+
 const displayInfo = computed(() => {
   const total = filteredData.value.length
   const start = (page.value - 1) * pageSize.value + 1
@@ -152,13 +267,12 @@ const displayInfo = computed(() => {
   return $t('table.display-info-text', { start, end, total })
 })
 
-const isNotZero = data.value.length > 0
+const isZero = ref(false) // data.value.length > 0
 const isCreatable = true
 
 const filterStatus = reactive({
   repositoryFilter: false,
   publicStatusFilter: false,
-  joinConditionFilter: false,
   memberVisibilityFilter: false,
 })
 
@@ -172,19 +286,11 @@ const filterItems = computed<DropdownMenuItem[]>(() => [
     },
   },
   {
-    label: $t('group.public-status-filter'),
+    label: $t('group.public-status'),
     type: 'checkbox' as const,
     checked: filterStatus.publicStatusFilter,
     onUpdateChecked(checked: boolean) {
       filterStatus.publicStatusFilter = checked
-    },
-  },
-  {
-    label: $t('group.join-condition-filter'),
-    type: 'checkbox' as const,
-    checked: filterStatus.joinConditionFilter,
-    onUpdateChecked(checked: boolean) {
-      filterStatus.joinConditionFilter = checked
     },
   },
   {
@@ -196,11 +302,18 @@ const filterItems = computed<DropdownMenuItem[]>(() => [
     },
   },
 ])
+
+const selectedRepositories = ref<string[]>([])
+const selectedPublicStatus = ref<string[]>([])
+const selectedMemberVisibilities = ref<string[]>([])
+
+watch([selectedRepositories, selectedPublicStatus, selectedMemberVisibilities, globalFilter],
+  () => {
+    page.value = 1 // フィルター変更時は1ページ目に戻る
+  })
+
 const repositoryNames = ref(repositories.map(repo => repo.displayName))
 const publicStatus = ref([$t('group.public-badge'), $t('group.private-badge')])
-const joinConditions = ref([
-  $t('group.open-to-join'), $t('group.approval-required'), $t('group.invite-only'),
-])
 const memberVisibilities = ref([
   $t('group.members-public'), $t('group.members-private'), $t('group.members-hidden'),
 ])
@@ -226,12 +339,12 @@ function onSelect(first: Event | TableRow<Group>, second: Event | TableRow<Group
       <h2 class="text-2xl font-semibold">
         {{ $t('group.list-title') }}
       </h2>
-      <div v-if="isNotZero">
+      <div v-if="!isZero">
         <div class="flex justify-between items-center mt-4">
           <UButton
             v-if="isCreatable"
             color="primary" :label="$t('group.create-button')"
-            variant="solid" icon="i-lucide-plus" :to="localePath('/groups/create')" class="mb-4"
+            variant="solid" icon="i-lucide-plus" :to="localePath('/groups/new')" class="mb-4"
           />
 
           <UModal
@@ -285,21 +398,25 @@ function onSelect(first: Event | TableRow<Group>, second: Event | TableRow<Group
             <div class="flex flex-col">
               <USelectMenu
                 v-if="filterStatus.repositoryFilter"
+                v-model="selectedRepositories"
                 :placeholder="$t('group.repository-filter')"
-                icon="i-lucide-folder" :items="repositoryNames" class="mt-2" multiple
+                icon="i-lucide-folder"
+                :items="repositoryNames"
+                class="mt-2"
+                multiple
               />
               <USelectMenu
                 v-if="filterStatus.publicStatusFilter"
+                v-model="selectedPublicStatus"
                 :placeholder="$t('group.public-status')"
-                :items="publicStatus" :search-input="false" class="mt-2" multiple
-              />
-              <USelectMenu
-                v-if="filterStatus.joinConditionFilter"
-                :placeholder="$t('group.join-condition-filter')"
-                :items="joinConditions" :search-input="false" class="mt-2" multiple
+                :items="publicStatus"
+                :search-input="false"
+                class="mt-2"
+                multiple
               />
               <USelectMenu
                 v-if="filterStatus.memberVisibilityFilter"
+                v-model="selectedMemberVisibilities"
                 :placeholder="$t('group.member-visibility-filter')"
                 :items="memberVisibilities" :search-input="false" class="mt-2" multiple
               />
@@ -344,7 +461,6 @@ function onSelect(first: Event | TableRow<Group>, second: Event | TableRow<Group
             ref="table"
             v-model:column-visibility="columnVisibility"
             v-model:sorting="sorting"
-            v-model:global-filter="globalFilter"
             v-model:row-selection="rowSelection"
             :data="pagedData" :columns="columns" @select="onSelect"
           />
@@ -357,20 +473,20 @@ function onSelect(first: Event | TableRow<Group>, second: Event | TableRow<Group
               <UPagination
                 v-model:page="page"
                 :items-per-page="pageSize"
-                :total="data.length"
+                :total="filteredData.length"
               />
             </div>
             <div class="flex-1" />
           </div>
         </div>
       </div>
-      <div v-if="!isNotZero">
+      <div v-if="isZero">
         <UEmpty
           :title="$t('group.no-users-title')"
           :actions="[{
             icon: 'i-lucide-plus',
             label: $t('group.create-button'),
-            to: 'groups/create',
+            to: 'groups/new',
           }, {
             icon: 'i-lucide-refresh-cw',
             label: $t('reload-button'),
@@ -381,4 +497,5 @@ function onSelect(first: Event | TableRow<Group>, second: Event | TableRow<Group
       </div>
     </UCard>
   </div>
+  <USwitch v-model="isZero" label="test用" />
 </template>

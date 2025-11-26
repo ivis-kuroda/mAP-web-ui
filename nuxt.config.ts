@@ -6,6 +6,7 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxt/content',
     '@nuxtjs/i18n',
+    '@vueuse/nuxt',
   ],
   ssr: false,
   imports: {

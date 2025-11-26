@@ -5,10 +5,11 @@ import { DateFormatter, getLocalTimeZone } from '@internationalized/date'
 import type { CalendarDate } from '@internationalized/date'
 import type { DropdownMenuItem, TableColumn, TableRow } from '@nuxt/ui'
 
-import { UButton, UCheckbox, UIcon, ULink } from '#components'
+import { UButton, UCheckbox, UDropdownMenu, UIcon, ULink, UTooltip } from '#components'
 
 const toast = useToast()
 const localePath = useLocalePath()
+const { copy } = useClipboard()
 const { users, repositories, groups } = useDataStore()
 const data = ref<User[]>(users)
 
@@ -48,15 +49,55 @@ const columns = computed<UserTableColumn[]>(() => [
     header: ({ column }) => sortableHeader(column, columnNameMap.displayName),
     cell: ({ row }) => {
       const name = row.original.displayName
+      const role = row.original.role ? Object.values(row.original.role![0]!)[0] : undefined
+      const labelMap = {
+        admin: {
+          label: $t('user.role.admin'),
+          color: 'error',
+        },
+        repoadm: {
+          label: $t('user.role.repo_admin'),
+          color: 'primary',
+        },
+        commadm: {
+          label: $t('user.role.community_admin'),
+          color: 'warning',
+        },
+        contributor: {
+          label: $t('user.role.contributor'),
+          color: 'neutral',
+        },
+      } as const
+
       return h(ULink,
         {
           to: localePath(`/users/${row.original.id}`),
-          class: 'font-bold hover:underline inline-flex items-center',
+          class: 'font-bold inline-flex items-center group text-neutral',
         },
         [
-          h('span', name),
-          h(UIcon, { name: 'i-lucide-chevron-right', class: 'size-5 shrink-0' }),
-        ])
+          h('span', { class: 'group-hover:underline' }, name),
+          role && h(UTooltip, {
+            // text: Object.keys(row.original.role![0]!)[0],
+            text: labelMap[role].label,
+            class: 'ml-2',
+            arrow: true,
+          }, () => h(
+            // UBadge, {
+            //   variant: 'subtle',
+            //   color: labelMap[role].color,
+            //   class: 'ml-2',
+            //   size: 'sm',
+            // }, () => labelMap[role].label,
+            UIcon, {
+              name: 'i-lucide-badge-check',
+              class: ['size-4.5', 'shrink-0', `text-${labelMap[role!].color}`],
+            },
+          )),
+          // h(UIcon, {
+          //   name: 'i-lucide-badge-check', class: `size-5 shrink-0 text-${labelMap[role!].color}`,
+          // }),
+        ].filter(Boolean),
+      )
     },
     enableHiding: false,
   },
@@ -72,6 +113,34 @@ const columns = computed<UserTableColumn[]>(() => [
     accessorKey: 'lastModified',
     header: ({ column }) => sortableHeader(column, columnNameMap.lastModified),
   },
+  {
+    id: 'actions',
+    header: '',
+    cell: ({ row }) =>
+      h(
+        'div',
+        { class: 'text-right' },
+        h(
+          // @ts-expect-error: props type mismatch
+          UDropdownMenu,
+          {
+            'content': { align: 'end' },
+            'items': getRowItems(row),
+            'aria-label': 'Actions dropdown',
+          },
+          () =>
+            h(UButton, {
+              'icon': 'i-lucide-ellipsis-vertical',
+              'color': 'neutral',
+              'variant': 'ghost',
+              'size': 'sm',
+              'class': 'ml-auto',
+              'aria-label': 'Actions dropdown',
+            }),
+        ),
+      ),
+    enableHiding: false,
+  },
 ])
 
 const table = useTemplateRef('table')
@@ -86,8 +155,8 @@ type Column = Parameters<
 function sortableHeader(column: Column, label: string) {
   const sortDirection = column.getIsSorted()
   const iconSet = {
-    asc: 'i-lucide-arrow-up-narrow-wide',
-    desc: 'i-lucide-arrow-down-wide-narrow',
+    asc: 'i-lucide-arrow-down-a-z',
+    desc: 'i-lucide-arrow-up-a-z',
     none: 'i-lucide-arrow-up-down',
   } as const
 
@@ -107,6 +176,62 @@ function sortableHeader(column: Column, label: string) {
 }
 
 const sorting = ref([{ id: 'id', desc: false }])
+
+function getRowItems(row: TableRow<User>): DropdownMenuItem[] {
+  return [
+    {
+      type: 'label',
+      label: $t('table.actions-label'),
+    },
+    {
+      label: $t('user.actions.copy-id'),
+      onSelect() {
+        copy(row.original.id)
+
+        toast.add({
+          title: 'User ID copied to clipboard!',
+          color: 'success',
+          icon: 'i-lucide-circle-check',
+        })
+      },
+      icon: 'i-lucide-clipboard-copy',
+    },
+    {
+      label: $t('user.actions.copy-eppn'),
+      onSelect() {
+        copy(row.original.eppn)
+
+        toast.add({
+          title: 'EPPN copied to clipboard!',
+          color: 'success',
+          icon: 'i-lucide-circle-check',
+        })
+      },
+      icon: 'i-lucide-clipboard-copy',
+    },
+    {
+      label: $t('user.actions.edit-user'),
+      to: localePath(`/users/${row.original.id}/edit`),
+      icon: 'i-lucide-edit',
+    },
+    {
+      label: $t('table.actions.view-details'),
+      to: localePath(`/users/${row.original.id}`),
+      icon: 'i-lucide-eye',
+    },
+    {
+      type: 'separator',
+    },
+    {
+      label: $t('user.actions.delete-user'),
+      color: 'error',
+      onSelect() {
+        removeOneUser(row.original.id)
+      },
+      icon: 'i-lucide-trash',
+    },
+  ]
+}
 
 const page = ref(1)
 const pageSize = ref(5)
@@ -218,7 +343,9 @@ function onSelect(first: Event | TableRow<User>, second: Event | TableRow<User>)
   row.toggleSelected(!row.getIsSelected())
 }
 
-function deleteUsers(close: () => void) {
+const isOpenRemoveModal = ref(false)
+
+function removeUsers(close: () => void) {
   const count = selectedUsers.value.length
   if (count === 0) return
 
@@ -227,6 +354,18 @@ function deleteUsers(close: () => void) {
   rowSelection.value = {}
 
   close()
+  toast.add({
+    title: $t('toast.delete-success-title'),
+    description: $t('user.toast-delete-success'),
+    color: 'success',
+    icon: 'i-lucide-check-circle',
+  })
+}
+
+function removeOneUser(userId: string) {
+  data.value = data.value.filter(user => user.id !== userId)
+  rowSelection.value = {}
+
   toast.add({
     title: $t('toast.delete-success-title'),
     description: $t('user.toast-delete-success'),
@@ -245,22 +384,73 @@ function deleteUsers(close: () => void) {
 
       <div v-if="isNotZero">
         <div class="flex justify-between items-center mt-4">
-          <UButton
-            v-if="isCreatable"
-            color="primary" :label="$t('user.create-button')"
-            variant="solid" icon="i-lucide-plus" :to="localePath('/users/create')" class="mb-4"
-          />
+          <div class="flex space-x-2">
+            <UButton
+              v-if="isCreatable"
+              color="primary" :label="$t('user.create-button')"
+              variant="solid" icon="i-lucide-plus" :to="localePath('/users/new')" class="mb-4"
+            />
+            <UButton
+              v-if="isCreatable"
+              color="primary" :label="$t('user.bulk-create-button')"
+              variant="solid" icon="i-lucide-file-up" :to="localePath('/upload')" class="mb-4"
+            />
+          </div>
 
-          <UModal
-            v-if="selectedUsers.length > 0"
-            :title="$t('user.delete-confirmation-title', { count: selectedUsers.length })"
-            :description="$t('user.delete-confirmation-description')"
-            :ui="{ footer: 'justify-end' }" :close="false"
+          <UDropdownMenu
+            :items="[
+              {
+                label: $t('user.export-selected-users-button'),
+                icon: 'i-lucide-download',
+                onSelect() {
+                  // Export selected users
+                },
+              },
+              {
+                type: 'separator' as const,
+              },
+              {
+                label: $t('user.add-selected-users-button'),
+                color: 'neutral',
+                onSelect() {
+                  // Open add users modal
+                },
+                icon: 'i-lucide-user-plus',
+              },
+              {
+                label: $t('user.remove-selected-users-button'),
+                color: 'error',
+                onSelect() {
+                  isOpenRemoveModal = true
+                },
+                icon: 'i-lucide-user-minus',
+              },
+            ]"
           >
             <UButton
-              color="error" variant="outline" class="mb-4 ml-auto"
-              :label="$t('user.delete-selected-users-button', { count: selectedUsers.length })"
+              color="warning" variant="outline" class="mb-4 ml-auto"
+              :label="$t('user.operate-selected-users-button', { count: selectedUsers.length })"
+              :disabled="selectedUsers.length === 0"
             />
+          </UDropdownMenu>
+
+          <UModal
+            v-model:open="isOpenRemoveModal"
+            :ui="{ footer: 'justify-end' }" :close="false"
+          >
+            <template #header>
+              <div class="flex items-center space-x-2">
+                <UIcon name="i-lucide-alert-triangle" class="size-6 text-error" />
+                <h3 class="text-lg font-medium">
+                  {{ $t('user.remove-confirmation-head', { count: selectedUsers.length }) }}
+                  <USelectMenu
+                    :placeholder="$t('user.group-filter')"
+                    :items="userGroupNames" class="w-48" multiple
+                  />
+                  {{ $t('user.remove-confirmation-tail') }}
+                </h3>
+              </div>
+            </template>
             <template #body>
               <div class="flex flex-col justify-between items-center mt-4">
                 <div class="gap-4 text-center">
@@ -280,7 +470,7 @@ function deleteUsers(close: () => void) {
                 />
                 <UButton
                   color="error"
-                  :label="$t('modal.delete-button')" @click="deleteUsers(close)"
+                  :label="$t('modal.delete-button')" @click="removeUsers(close)"
                 />
               </div>
             </template>

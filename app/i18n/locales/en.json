@@ -1,17 +1,36 @@
 {
   "Management": "Management",
   "Others": "Others",
+  "cache": {
+    "last-updated-date": "Last updated date and time：{lastUpdated}",
+    "last-updated-error-title": "Failed to get the last update date and time",
+    "title": "Cache DB update",
+    "update-confirmation-title": "Would you like to update the following {count} repositories?",
+    "updateAllRepositories": "Update all repositories",
+    "updateSelectedRepositories": "Update selected repositories",
+    "updating": "Updating..."
+  },
   "cache-groups-menu": "Cashing groups",
   "group": {
     "approval-required": "Requires approval",
+    "copy-group-id": "Copy group ID",
+    "copy-group-id-clipboard": "Copied group ID to clipboard.",
     "create-button": "Create new group",
+    "delete": "Delete group",
     "delete-confirmation-description": "Deleted users cannot be restored.",
     "delete-confirmation-title": "Do you want to delete the following {count} groups?",
     "delete-selected-groups-button": "Delete selected group",
+    "detail": "Group details",
+    "edit": "Edit group",
+    "edit-button": "Edit group",
+    "id": "Group ID",
+    "id-description": "Once set, the group ID cannot be changed.",
+    "id-placeholder": "Half-width alphanumeric characters and symbols (.-_), 4 to 50 characters",
     "invite-only": "Requires invitation",
     "join-condition": "Conditions for Member Joining",
     "join-condition-filter": "Conditions for Member Joining",
     "list-title": "Group List",
+    "member-count": "Number of members",
     "member-visibility": "Member public status",
     "member-visibility-filter": "Member public status",
     "members-count": "no user | 1 user | {count} users",
@@ -25,7 +44,9 @@
     "public-badge": "Public",
     "public-status": "Group public status",
     "public-status-filter": "Group public status",
-    "repository-filter": "Repository"
+    "repository-filter": "Repository",
+    "show-details": "View details",
+    "view-in-cloud-gateway": "Open with Cloud Gateway"
   },
   "groups": "Groups",
   "header": {
@@ -41,8 +62,10 @@
   "mAP-web-ui": "mAP web UI",
   "modal": {
     "cancel-button": "Cancel",
-    "delete-button": "Delete"
+    "delete-button": "Delete",
+    "update-button": "Update"
   },
+  "privacy-policy": "Privacy policy",
   "profile": "Profile",
   "reload-button": "Reload",
   "repositories": "Repositories",
@@ -58,6 +81,10 @@
   "sp-connecter-column": "SP Connecter",
   "sp-connector-label": "SP connector:",
   "table": {
+    "actions": {
+      "view-details": "View details"
+    },
+    "actions-label": "Actions",
     "add-filter-button": "Add filter",
     "display-count-label": "Number of items displayed:",
     "display-info-text": "Displaying {start}～{end} items (all {total} items)",
@@ -65,23 +92,34 @@
     "switch-to-card-view": "Switch to card view",
     "switch-to-table-view": "Switch to table view"
   },
+  "terms-of-use": "Terms of use",
   "toast": {
-    "delete-success-title": "Successful deletion"
+    "delete-success-title": "Successful removal"
   },
   "top-page-description": "This is the top page.",
   "user": {
+    "actions": {
+      "copy-eppn": "Copy ePPN to clipboard",
+      "copy-id": "Copy ID to clipboard",
+      "delete-user": "delete user",
+      "edit-user": "Edit user"
+    },
+    "add-selected-users-button": "Add to group",
+    "bulk-create-button": "Bulk operations",
     "create-button": "Add new user",
     "delete-confirmation-description": "Deleted users cannot be restored.",
     "delete-confirmation-title": "Do you want to delete the following {count} users?",
-    "delete-selected-users-button": "Delete selected users",
     "email-column": "Email",
     "eppn-column": "ePPN",
+    "export-selected-users-button": "Export users",
     "group-filter": "Group",
     "last-modified-column": "Last updated",
     "last-modified-filter": "Last updated",
     "list-title": "User List",
     "name-column": "User name",
     "no-users-title": "There are no users that you can operate.",
+    "operate-selected-users-button": "Operate selected user",
+    "remove-selected-users-button": "Remove from group",
     "repository-filter": "Repository",
     "role": {
       "admin": "System Administrator",

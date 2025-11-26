@@ -15,10 +15,11 @@ interface Group {
   members?: Pick<User, 'id'>[]
 }
 
+type roleType = 'admin' | 'repoadm' | 'contributor'
 interface User {
   id: string
   displayName: string
-  role?: string[]
+  role?: { [repo: string]: roleType }[]
   email?: string
   eppn: string
   lastModified: string

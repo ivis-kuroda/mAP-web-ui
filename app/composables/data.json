@@ -31,8 +31,8 @@
   ],
   "groups": [
     {
-      "id": "1",
-      "displayName": "jc_xxx_roles_repoadm",
+      "id": "jc_aaa_roles_repoadm",
+      "displayName": "AAA大学リポジトリ管理者",
       "isPublic": true,
       "joinCondition": "approval",
       "memberVisibility": "private",
@@ -43,8 +43,8 @@
       ]
     },
     {
-      "id": "2",
-      "displayName": "jc_xxx_roles_repoadm",
+      "id": "jc_bbb_roles_repoadm",
+      "displayName": "BBB大学リポジトリ管理者",
       "isPublic": true,
       "joinCondition": "approval",
       "memberVisibility": "private",
@@ -55,22 +55,22 @@
       ]
     },
     {
-      "id": "3",
-      "displayName": "jc_xxx_roles_contributor",
+      "id": "jc_aaa_roles_contributor",
+      "displayName": "AAA大学リポジトリ投稿ユーザー",
       "isPublic": true,
       "joinCondition": "approval",
       "memberVisibility": "private"
     },
     {
-      "id": "4",
-      "displayName": "jc_xxx_groups_AAA",
+      "id": "jc_aaa_groups_AAA",
+      "displayName": "AAA大学グループ工学部",
       "isPublic": true,
       "joinCondition": "open",
       "memberVisibility": "public"
     },
     {
-      "id": "5",
-      "displayName": "test_group",
+      "id": "jc_aaa_groups_AAA_department",
+      "displayName": "AAA大学グループ工学部情報工学科",
       "isPublic": false,
       "joinCondition": "approval",
       "memberVisibility": "hidden",
@@ -87,8 +87,8 @@
       ]
     },
     {
-      "id": "6",
-      "displayName": "test_group2",
+      "id": "test_group2",
+      "displayName": "AAA大学BBB研究室",
       "isPublic": false,
       "joinCondition": "approval",
       "memberVisibility": "hidden"
@@ -127,7 +127,9 @@
       "id": "1",
       "displayName": "青木 太郎",
       "role": [
-        "admin"
+        {
+          "jc_xxx_nii_ac_jp": "admin"
+        }
       ],
       "email": "taro@example.com",
       "eppn": "taro_aoki@idp.example.com",
@@ -137,7 +139,7 @@
       "id": "2",
       "displayName": "大田 次郎",
       "role": [
-        "repoadm"
+        { "jc_xxx_nii_ac_jp": "repoadm"}
       ],
       "email": "jiro@example.com",
       "eppn": "jiro_ota@idp.example.com",
@@ -146,6 +148,9 @@
     {
       "id": "3",
       "displayName": "佐々木 花子",
+      "role": [
+        { "jc_xxx_nii_ac_jp": "commadm"}
+      ],
       "email": "hanako@example.com",
       "eppn": "hanako_sasaki@idp.example.com",
       "lastModified": "2025/11/7"
@@ -153,6 +158,9 @@
     {
       "id": "4",
       "displayName": "田中 四郎",
+      "role": [
+        { "jc_xxx_nii_ac_jp": "contributor"}
+      ],
       "email": "shiro@example.com",
       "eppn": "shiro_tanaka@idp.example.com",
       "lastModified": "2025/11/7"
