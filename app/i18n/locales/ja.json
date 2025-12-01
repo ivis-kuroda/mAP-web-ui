@@ -1,6 +1,13 @@
 {
   "Management": "マネジメント",
   "Others": "その他",
+  "button": {
+    "add": "追加",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "save": "保存"
+  },
   "cache": {
     "last-updated-date": "最終更新日時：{lastUpdated}",
     "last-updated-error-title": "最終更新日時の取得に失敗しました",
@@ -11,6 +18,11 @@
     "updating": "更新中..."
   },
   "cache-groups-menu": "グループキャッシュ",
+  "form": {
+    "error": {
+      "required": "必須項目です。"
+    }
+  },
   "group": {
     "approval-required": "管理者の承認が必要",
     "copy-group-id": "グループIDをコピー",
@@ -57,6 +69,10 @@
   },
   "help": "ヘルプ",
   "history": "履歴",
+  "language": {
+    "english": "英語",
+    "japanese": "日本語"
+  },
   "login-title": "ログイン",
   "logout": "ログアウト",
   "mAP-web-ui": "mAP web UI",
@@ -107,6 +123,7 @@
     "add-selected-users-button": "グループに追加",
     "bulk-create-button": "一括操作",
     "create-button": "ユーザー追加",
+    "delete-button": "ユーザー削除",
     "delete-confirmation-description": "「jc_xxx_groups_AAA」から以下のユーザーを除外します。",
     "delete-confirmation-title": "以下の{count}ユーザーを除外しますか？",
     "email-column": "メールアドレス",
@@ -116,6 +133,10 @@
     "last-modified-column": "最終更新日",
     "last-modified-filter": "最終更新日",
     "list-title": "ユーザー一覧",
+    "modal": {
+      "delete-user-description": "削除したユーザーは復元できません。",
+      "delete-user-title": "以下のユーザーを削除しますか？"
+    },
     "name-column": "ユーザー名",
     "no-users-title": "操作可能なユーザーがありません。",
     "operate-selected-users-button": "選択したユーザーを操作",
@@ -131,7 +152,18 @@
       "repo_admin": "リポジトリ管理者"
     },
     "role-filter": "ロール",
-    "toast-delete-success": "ユーザーは正常に削除されました。"
+    "toast-delete-success": "ユーザーは正常に削除されました。",
+    "view": {
+      "email-label": "メールアドレス",
+      "groups-label": "所属グループ",
+      "preferred-language-label": "優先言語",
+      "repositories-label": "所属リポジトリ",
+      "title-add": "ユーザー追加",
+      "title-detail": "ユーザー詳細",
+      "title-edit": "ユーザー編集",
+      "user-id-label": "ユーザーID",
+      "user-name-label": "ユーザー名"
+    }
   },
   "users": "ユーザー",
   "welcom-to": "ようこそ Web UI へ"
