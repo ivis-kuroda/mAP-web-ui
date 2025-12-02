@@ -12,6 +12,15 @@ class RuntimeConfig(BaseSettings):
     SECRET_KEY: str = "sample_secret_key"  # noqa: S105
     """A secret key for cryptographic operations."""
 
+    LOG_LEVEL: str = "INFO"
+    """Logging level for the application."""
+
+    LOG_FORMAT: str | None = None
+    """Logging format for the application."""
+
+    LOG_DATEFMT: str = "%Y-%m-%dT%H:%M:%S"
+    """Date format for logging."""
+
     POSTGRES_USER: str = "mapuser"
     """PostgreSQL database username."""
 

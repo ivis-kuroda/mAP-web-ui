@@ -2,6 +2,7 @@ import typing as t
 
 from .db.loader import load_models
 from .db.shared import db
+from .loggings.setup import setup_logger
 from .views.route import create_blueprints
 
 if t.TYPE_CHECKING:
@@ -33,6 +34,7 @@ class MapWebUI:
         self.app = app
         self.init_db_app(app)
 
+        setup_logger(app)
         create_blueprints(app)
 
         app.extensions["map_web_ui"] = self
