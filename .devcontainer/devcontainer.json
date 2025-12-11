@@ -1,0 +1,25 @@
+{
+  "name": "devcontainer",
+  "dockerComposeFile": [
+    "dev.compose.yaml"
+  ],
+  "runServices": ["dev"],
+  "service": "dev",
+  "remoteUser": "vscode",
+  "workspaceFolder": "/workspace",
+
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.14"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "24"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "dockerDashComposeVersion": "latest",
+      "enableNonRootDocker": true,
+      "moby": false
+    }
+  }
+}
