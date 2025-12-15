@@ -31,6 +31,16 @@ services:
       - redis
       - rabbitmq
 
+  nginx:
+    build: nginx
+    image: jc-groups-manager-nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
+
   redis:
     restart: "always"
     image: redis:7.4.1
