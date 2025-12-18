@@ -1,5 +1,5 @@
 <script setup>
-import { name as title, description } from '@@/package.json'
+import { description, name as title } from '@@/package.json'
 
 useHead({
   meta: [

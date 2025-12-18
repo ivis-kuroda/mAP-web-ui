@@ -19,7 +19,7 @@ const unhideIdps: string[] = wayfConfig.unhideIdps
 const hideIdps: string[] = wayfConfig.hideIdps
 const additionalIdPs: { name: string, entityID: string }[] = wayfConfig.additionalIdPs
 
-/*  eslint-disable no-useless-escape */
+/*  eslint-disable @stylistic/max-len, no-useless-escape */
 const embeddedWAYF = `
 <!-- EMBEDDED-WAYF-START -->
 <script type="text/javascript"><!--

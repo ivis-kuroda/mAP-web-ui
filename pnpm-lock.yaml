@@ -36,6 +36,9 @@ importers:
       eslint:
         specifier: ^9.39.1
         version: 9.39.1(jiti@2.6.1)
+      eslint-plugin-unicorn:
+        specifier: ^62.0.0
+        version: 62.0.0(eslint@9.39.1(jiti@2.6.1))
       typescript:
         specifier: ^5.9.3
         version: 5.9.3

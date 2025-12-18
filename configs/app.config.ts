@@ -1,4 +1,5 @@
 // Application configuration for frontend contents
+/* eslint-disable @stylistic/max-len */
 
 /**
  * Server hostname of this application \
