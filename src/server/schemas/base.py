@@ -1,3 +1,9 @@
+#
+# Copyright (C) 2025 National Institute of Informatics.
+#
+
+"""Provides common configuration for resource schemas."""
+
 from pydantic import BaseModel as PydanticBaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 

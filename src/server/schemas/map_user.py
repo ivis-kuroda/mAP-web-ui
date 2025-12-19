@@ -1,5 +1,12 @@
+#
+# Copyright (C) 2025 National Institute of Informatics.
+#
+
+"""Schemas for the mAP Core API user resources."""
+
 import typing as t
-from datetime import datetime
+
+from datetime import datetime  # noqa: TC003
 
 from pydantic import EmailStr, Field, HttpUrl
 
@@ -9,7 +16,7 @@ from .base import BaseModel
 
 
 class MapUser(BaseModel):
-    """Schema for a user resource in the mAP API.
+    """Schema for a user resource in the mAP Core API.
 
     Handles validation and (de)serialization of user resources.
     """

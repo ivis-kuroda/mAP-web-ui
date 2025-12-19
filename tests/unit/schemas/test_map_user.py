@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import pytest
+
 from pydantic_core import ValidationError
 
 from server.schemas.map_user import EPPN, Email, Group, MapUser, Meta

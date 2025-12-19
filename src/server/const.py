@@ -1,3 +1,9 @@
+#
+# Copyright (C) 2025 National Institute of Informatics.
+#
+
+"""Constant values for the server application."""
+
 from typing import Final
 
 MAP_USER_SCHEMA: Final = "urn:ietf:params:scim:schemas:mace:gakunin.jp:core:2.0:User"
@@ -6,5 +12,7 @@ MAP_USER_SCHEMA: Final = "urn:ietf:params:scim:schemas:mace:gakunin.jp:core:2.0:
 MAP_GROUP_SCHEMA: Final = "urn:ietf:params:scim:schemas:mace:gakunin.jp:core:2.0:Group"
 """The schema URI for mAP Group resources."""
 
-MAP_SERVICE_SCHEMA: Final = "urn:ietf:params:scim:schemas:mace:gakunin.jp:core:2.0:Service"
+MAP_SERVICE_SCHEMA: Final = (
+    "urn:ietf:params:scim:schemas:mace:gakunin.jp:core:2.0:Service"
+)
 """The schema URI for mAP Service resources."""

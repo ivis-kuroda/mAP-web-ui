@@ -1,3 +1,9 @@
+#
+# Copyright (C) 2025 National Institute of Informatics.
+#
+
+"""Factory for creating and configuring the Flask application."""
+
 import os
 
 from celery import Celery, Task
@@ -38,7 +44,7 @@ def celery_init_app(app: Flask) -> Celery:
     """
 
     class FlaskTask(Task):
-        """Custom Celery Task class that wraps task execution in the Flask app context."""
+        """Task with Flask application context."""
 
         def __call__(self, *args, **kwargs):
             with app.app_context():

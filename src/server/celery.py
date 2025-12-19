@@ -1,3 +1,9 @@
+#
+# Copyright (C) 2025 National Institute of Informatics.
+#
+
+"""Celery application for background task processing."""
+
 import typing as t
 
 from .factory import create_app

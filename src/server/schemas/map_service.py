@@ -1,5 +1,12 @@
+#
+# Copyright (C) 2025 National Institute of Informatics.
+#
+
+"""Schemas for the mAP Core API service resources."""
+
 import typing as t
-from datetime import datetime
+
+from datetime import datetime  # noqa: TC003
 
 from pydantic import Field, HttpUrl
 
@@ -9,7 +16,7 @@ from .base import BaseModel
 
 
 class MapService(BaseModel):
-    """Schema for a service resource in the mAP API.
+    """Schema for a service resource in the mAP Core API.
 
     Handles validation and (de)serialization of service resources.
     """
