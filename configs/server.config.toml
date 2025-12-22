@@ -1,0 +1,14 @@
+# Application configuration for server side
+
+# Server hostname of this application.
+server_name = 'localhost'
+
+# Secret key for cryptographic operations.
+secret_key = 'CHANGE ME'
+
+[celery]
+# URL of the Celery message broker.
+broker_url = "amqp://guest:guest@rabbitmq:5672//"
+
+# URL of the Celery result backend.
+result_backend = "redis://redis:6379/2"

@@ -11,6 +11,7 @@ requires-python = ">=3.14"
 dependencies = [
     "celery[redis]>=5.6.0",
     "flask>=3.1.2",
+    "pydantic-settings>=2.12.0",
     "pydantic[email]>=2.12.5",
 ]
 
@@ -37,6 +38,7 @@ omit = ["__init__.py", "tests/*"]
 ignore = [
   "COM812",
   "INP001",
+  "TC006",
   "D203",
   "D213",
   "TRY400",

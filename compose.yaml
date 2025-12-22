@@ -8,10 +8,6 @@ services:
       target: dev
     image: jc-groups-manager-dev
     container_name: web
-    environment:
-      FLASK_SECRET_KEY: CHANGE ME
-      CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
-      CELERY_RESULT_BACKEND: redis://redis:6379/2
     ports:
       - "5050:5050"
     develop:
@@ -22,6 +18,11 @@ services:
           include:
             - src/server
             - certs
+        - action: sync+restart
+          path: .
+          target: /code
+          include:
+            - configs/server.config.toml
         - action: rebuild
           path: pyproject.toml
         - action: rebuild
@@ -36,10 +37,6 @@ services:
       target: dev
     image: jc-groups-manager-dev
     container_name: worker
-    environment:
-      FLASK_SECRET_KEY: CHANGE ME
-      CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
-      CELERY_RESULT_BACKEND: redis://redis:6379/2
     command: celery -A server.celery worker
     depends_on:
       - redis
@@ -52,6 +49,7 @@ services:
           include:
             - src/server
             - certs
+            - configs/server.config.toml
         - action: rebuild
           path: pyproject.toml
         - action: rebuild

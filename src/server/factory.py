@@ -9,6 +9,9 @@ import os
 from celery import Celery, Task
 from flask import Flask
 
+from server.config import setup_config
+from server.const import DEFAULT_CONFIG_PATH
+
 
 def create_app(import_name: str) -> Flask:
     """Factory function to create and configure the Flask application.
@@ -21,12 +24,8 @@ def create_app(import_name: str) -> Flask:
 
     """
     app = Flask(import_name)
-    app.config.from_mapping(
-        CELERY={
-            "broker_url": os.environ["CELERY_BROKER_URL"],
-            "result_backend": os.environ["CELERY_RESULT_BACKEND"],
-        },
-    )
+    config = setup_config(DEFAULT_CONFIG_PATH)
+    app.config.from_object(config)
     app.config.from_prefixed_env()
     celery_init_app(app)
 

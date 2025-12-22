@@ -6,6 +6,9 @@
 
 from typing import Final
 
+DEFAULT_CONFIG_PATH: Final = "configs/server.config.toml"
+"""Default path to the server configuration TOML file."""
+
 MAP_USER_SCHEMA: Final = "urn:ietf:params:scim:schemas:mace:gakunin.jp:core:2.0:User"
 """The schema URI for mAP User resources."""
 
