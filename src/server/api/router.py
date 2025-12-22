@@ -23,11 +23,11 @@ def create_blueprints(app: Flask) -> None:
         app (Flask): The Flask application instance.
 
     """
-    bp_api = Blueprint("api", __name__, url_prefix="/api")
+    bp_api = Blueprint("api", __name__)
 
     for _, name, _ in iter_modules([str(Path(__file__).parent)]):
         module = import_module(f"{__package__}.{name}")
         if hasattr(module, "bp"):
-            bp_api.register_blueprint(module.bp)
+            bp_api.register_blueprint(module.bp, url_prefix=f"/{name}")
 
-    app.register_blueprint(bp_api)
+    app.register_blueprint(bp_api, url_prefix="/api")
